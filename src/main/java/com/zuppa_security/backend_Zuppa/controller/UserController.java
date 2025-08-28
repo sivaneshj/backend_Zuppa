@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
-@Slf4j
 @RestController
 @CrossOrigin(value = "http://localhost:5173")
-@RequestMapping("/user")
 public class UserController {
 
     @Autowired
@@ -28,8 +26,9 @@ public class UserController {
 
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> del(@RequestParam String id){
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> del(@PathVariable String id){
+        System.out.println(id);
         Boolean res = userser.delete(id);
         if(!res){
             return ResponseEntity.status((HttpStatus.NOT_FOUND)).body("No user found");
@@ -46,11 +45,20 @@ public class UserController {
          }
          return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully...");
     }
+
     @GetMapping("/home")
     public ArrayList<Users> users(){
         return userser.getall();
     }
 
 
+    @PutMapping("/update/{userName}")
+    public ResponseEntity<?> update(@PathVariable String userName, @RequestBody Users user){
+        Boolean res = userser.update(userName,user.getPassword());
+        if(res){
+            return ResponseEntity.status(HttpStatus.OK).body("Updated successfully");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Existing User");
+    }
 
 }
